@@ -30,7 +30,22 @@ export const CallConnect = ({
     );
 
     const [client, setClient] = useState<StreamVideoClient>();
+    // useEffect(() => {
+    // const _client = new StreamVideoClient({
+    //     apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
+    //     user: {
+    //         id: userId,
+    //         name: userName,
+    //         image: userImage,
+    //     },
+    //     tokenProvider: generateToken,
     useEffect(() => {
+        console.log("[CALL_CONNECT] creating StreamVideoClient", {
+            userId,
+            userName,
+            userImage: !!userImage,
+        });
+
         const _client = new StreamVideoClient({
             apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
             user: {
@@ -38,7 +53,13 @@ export const CallConnect = ({
                 name: userName,
                 image: userImage,
             },
-            tokenProvider: generateToken,
+            tokenProvider: async () => {
+                console.log("[CALL_CONNECT] tokenProvider called");
+                const token = await generateToken();
+                console.log("[CALL_CONNECT] tokenProvider returned token", { tokenLength: token?.length });
+                return token;
+            },
+            // optional: timeout settings if supported
         })
         setClient(_client);
 
@@ -76,10 +97,10 @@ export const CallConnect = ({
         )
     }
     return (
-       <StreamVideo client={client}>
-        <StreamCall call={call}>
-            <CallUI meetingName={meetingName} />
-        </StreamCall>
-       </StreamVideo>
+        <StreamVideo client={client}>
+            <StreamCall call={call}>
+                <CallUI meetingName={meetingName} />
+            </StreamCall>
+        </StreamVideo>
     )
 }
