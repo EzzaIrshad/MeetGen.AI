@@ -16,44 +16,108 @@
 //     return Response.json(data);
 // }
 
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 
-export async function GET() {
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                {
-                                    text: "What is 1 + 1?",
-                                },
-                            ],
-                        },
-                    ],
-                }),
-            }
-        );
+// export async function GET() {
+//     try {
+//         const response = await fetch(
+//             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+//             {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//                 body: JSON.stringify({
+//                     contents: [
+//                         {
+//                             parts: [
+//                                 {
+//                                     text: "What is 1 + 1?",
+//                                 },
+//                             ],
+//                         },
+//                     ],
+//                 }),
+//             }
+//         );
 
-        const data = await response.json();
+//         const data = await response.json();
 
-        console.log("Gemini response:", data);
+//         console.log("Gemini response:", data);
 
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error("Gemini test error:", error);
+//         return NextResponse.json(data);
+//     } catch (error) {
+//         console.error("Gemini test error:", error);
 
-        return NextResponse.json(
-            {
-                error: String(error),
-            },
-            { status: 500 }
-        );
-    }
+//         return NextResponse.json(
+//             {
+//                 error: String(error),
+//             },
+//             { status: 500 }
+//         );
+//     }
+// }
+
+// ------------GROQ TEST------------------
+// import { NextResponse } from "next/server";
+// import { createAgent, openai } from "@inngest/agent-kit";
+
+// export async function GET() {
+//     const summarizer = createAgent({
+//         name: "summarizer",
+//         system: "Summarize meetings.",
+//         model: openai({
+//             model: "openai/gpt-oss-120b",
+//             apiKey: process.env.GROQ_API_KEY!,
+//             baseUrl: "https://api.groq.com/openai/v1",
+//         }),
+//     });
+
+//     const { output } = await summarizer.run(
+//         "Summarize: Today we discussed authentication and payments."
+//     );
+
+//     return NextResponse.json({
+//         summary: output[0],
+//     });
+// }
+
+// -------------INNGEST TEST-----------------
+import { createAgent, openai } from "@inngest/agent-kit";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const summarizer = createAgent({
+    name: "summarizer",
+    system: `
+You are an expert meeting summarizer.
+
+Summarize the transcript into:
+- Overview
+- Key Notes
+- Action Items
+  `,
+    model: openai({
+        model: "openai/gpt-oss-120b",
+        apiKey: process.env.GROQ_API_KEY!,
+        baseUrl: "https://api.groq.com/openai/v1",
+    }),
+});
+
+async function main() {
+    const transcript = `
+John: Welcome everyone.
+Sarah: Today we'll discuss the new dashboard.
+John: We have improved performance by 40%.
+Sarah: Next sprint we'll add authentication.
+`;
+
+    const { output } = await summarizer.run(
+        `Summarize this transcript:\n${transcript}`
+    );
+
+    console.log(output[0]);
 }
+
+main();

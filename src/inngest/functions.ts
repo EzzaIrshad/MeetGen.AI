@@ -15,7 +15,7 @@ const summarizer = createAgent({
 Use the following markdown structure for every output:
 
 ### Overview
-Provide a detailed, engaging summary of the session's content. Focus on major features, user workflows, and any key takeaways. Write in a narrative style, using full sentences. Highlight unique or powerful aspects of the product, platform, or discussion.
+Provide an engaging summary of the session's content. Focus on major features, user workflows, and any key takeaways. Write in a narrative style, using full sentences. Highlight unique or powerful aspects of the product, platform, or discussion.
 
 ### Notes
 Break down key content into thematic sections with timestamp ranges. Each section should summarize key points, actions, or demos in bullet format.
@@ -30,7 +30,11 @@ Example:
 - Feature X automatically does Y
 - Mention of integration with Z
   `.trim(),
-    model: openai({ model: "gpt-4o-mini", apiKey: process.env.OPENAI_API_KEY }),
+   model: openai({
+        model: "openai/gpt-oss-120b",
+        apiKey: process.env.GROQ_API_KEY!,
+        baseUrl: "https://api.groq.com/openai/v1",
+    }),
 });
 
 export const meetingsProcessing = inngest.createFunction(
@@ -96,8 +100,7 @@ export const meetingsProcessing = inngest.createFunction(
         })
 
         const { output } = await summarizer.run(
-            "Summarize the following transcript: " +
-            JSON.stringify(transcriptWithSpeakers)
+            `Summarize the following transcript: ${JSON.stringify(transcriptWithSpeakers)}`
         );
 
         await step.run("save-summary", async () => {

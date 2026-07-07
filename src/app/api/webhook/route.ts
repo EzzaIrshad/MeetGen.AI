@@ -118,7 +118,6 @@ export async function POST(req: NextRequest) {
             streamApiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
             streamUserToken: agentToken,
             openAiApiKey: process.env.OPENAI_API_KEY!,
-            model: "gpt-4o-realtime-preview"
         });
         await realtimeClient.connect();
 
