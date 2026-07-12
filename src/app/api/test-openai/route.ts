@@ -16,6 +16,8 @@
 //     return Response.json(data);
 // }
 
+// =---------------------gemini key test---------------------------
+
 // import { NextResponse } from "next/server";
 
 // export async function GET() {
@@ -83,41 +85,41 @@
 // }
 
 // -------------INNGEST TEST-----------------
-import { createAgent, openai } from "@inngest/agent-kit";
-import dotenv from "dotenv";
+// import { createAgent, openai } from "@inngest/agent-kit";
+// import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
 
-const summarizer = createAgent({
-    name: "summarizer",
-    system: `
-You are an expert meeting summarizer.
+// const summarizer = createAgent({
+//     name: "summarizer",
+//     system: `
+// You are an expert meeting summarizer.
 
-Summarize the transcript into:
-- Overview
-- Key Notes
-- Action Items
-  `,
-    model: openai({
-        model: "openai/gpt-oss-120b",
-        apiKey: process.env.GROQ_API_KEY!,
-        baseUrl: "https://api.groq.com/openai/v1",
-    }),
-});
+// Summarize the transcript into:
+// - Overview
+// - Key Notes
+// - Action Items
+//   `,
+//     model: openai({
+//         model: "openai/gpt-oss-120b",
+//         apiKey: process.env.GROQ_API_KEY!,
+//         baseUrl: "https://api.groq.com/openai/v1",
+//     }),
+// });
 
-async function main() {
-    const transcript = `
-John: Welcome everyone.
-Sarah: Today we'll discuss the new dashboard.
-John: We have improved performance by 40%.
-Sarah: Next sprint we'll add authentication.
-`;
+// async function main() {
+//     const transcript = `
+// John: Welcome everyone.
+// Sarah: Today we'll discuss the new dashboard.
+// John: We have improved performance by 40%.
+// Sarah: Next sprint we'll add authentication.
+// `;
 
-    const { output } = await summarizer.run(
-        `Summarize this transcript:\n${transcript}`
-    );
+//     const { output } = await summarizer.run(
+//         `Summarize this transcript:\n${transcript}`
+//     );
 
-    console.log(output[0]);
-}
+//     console.log(output[0]);
+// }
 
-main();
+// main();

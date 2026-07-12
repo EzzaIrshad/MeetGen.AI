@@ -1,4 +1,4 @@
-import { useTRPC } from "@/app/trpc/client";
+import { useTRPC } from "@/trpc/client";
 import useMeetingsFilters from "../../hooks/use-meetings-filters";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
