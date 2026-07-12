@@ -19,7 +19,6 @@ import "stream-chat-react/dist/css/index.css";
 
 interface ChatUIProps {
     meetingId: string;
-    meetingName: string;
     userId: string;
     userName: string;
     userImage: string | undefined;
@@ -27,7 +26,6 @@ interface ChatUIProps {
 
 export const ChatUI = ({
     meetingId,
-    meetingName,
     userId,
     userName,
     userImage,
@@ -49,16 +47,23 @@ export const ChatUI = ({
     });
 
     useEffect(() => {
-        if (!client) return;
+        if (!client) {
+            setChannel(undefined);
+            return;
+        }
 
-        const channel = client.channel("messaging", meetingId, {
+        const nextChannel = client.channel("messaging", meetingId, {
             members: [userId],
         });
 
-        setChannel(channel);
-    }, [client, meetingId, meetingName, userId]);
+        setChannel(nextChannel);
 
-    if (!client) {
+        return () => {
+            setChannel(undefined);
+        };
+    }, [client, meetingId, userId]);
+
+    if (!client || !channel) {
         return (
             <LoadingState
                 title="Loading Chat"

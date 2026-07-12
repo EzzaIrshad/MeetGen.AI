@@ -66,8 +66,8 @@ export const CompletedState = ({ data }: Props) => {
                     <Transcript meetingId={data.id} />
                 </TabsContent>
 
-                <TabsContent value="chat">
-                    <ChatProvider meetingId={data.id} meetingName={data.name} />
+                <TabsContent value="chat" forceMount className="data-[state=inactive]:hidden">
+                    <ChatProvider meetingId={data.id} />
                 </TabsContent>
 
                 <TabsContent value="recording">

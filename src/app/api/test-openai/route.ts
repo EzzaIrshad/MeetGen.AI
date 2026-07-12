@@ -84,6 +84,43 @@
 //     });
 // }
 
+import { NextResponse } from "next/server";
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+
+export async function GET() {
+    if (!process.env.GROQ_API_KEY) {
+        return NextResponse.json(
+            { error: "GROQ_API_KEY is not set" },
+            { status: 500 }
+        );
+    }
+
+    try {
+        const response = await groq.chat.completions.create({
+            model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+            messages: [
+                {
+                    role: "user",
+                    content: "Reply with one short sentence confirming Groq is working.",
+                },
+            ],
+            temperature: 0.2,
+        });
+
+        return NextResponse.json({
+            ok: true,
+            reply: response.choices[0]?.message?.content ?? "",
+        });
+    } catch (error) {
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "Unknown error" },
+            { status: 500 }
+        );
+    }
+}
+
 // -------------INNGEST TEST-----------------
 // import { createAgent, openai } from "@inngest/agent-kit";
 // import dotenv from "dotenv";

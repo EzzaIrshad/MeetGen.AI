@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 import { and, eq, not } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -16,9 +16,9 @@ import { createRealtimeClient } from "@stream-io/openai-realtime-api";
 import { inngest } from "@/inngest/client";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamChat } from "@/lib/stream-chat";
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
-const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+const groqModel = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
 function verifySignatureWithSDK(body: string, signature: string): boolean {
     return streamVideo.verifyWebhook(body, signature);
@@ -28,14 +28,13 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get("x-signature");
     const apiKey = req.headers.get("x-api-key");
 
-    console.log("[WEBHOOK] Received webhook request", { signature: !!signature, apiKey: !!apiKey });
+    console.log("[WEBHOOK] Received webhook request");
     if (!signature || !apiKey) {
         return NextResponse.json(
             { error: "Missing signature or API key" },
             { status: 400 }
         )
     }
-    console.log("[WEBHOOK] Signature verified successfully");
 
     const body = await req.text();
 
@@ -80,8 +79,6 @@ export async function POST(req: NextRequest) {
                     not(eq(meetings.status, "processing")),
                 )
             )
-
-        console.log("[WEBHOOK] Database query result - Meeting found:", existingMeeting);
 
         if (!existingMeeting) {
             return NextResponse.json({ status: "ok" });
@@ -263,26 +260,30 @@ export async function POST(req: NextRequest) {
 
             const previousMessages = channel.state.messages
                 .slice(-5)
-                .filter((msg) => msg.text && msg.text.trim() !== "")
-                .map<ChatCompletionMessageParam>((message) => ({
+                .filter((msg) => typeof msg.text === "string" && msg.text.trim() !== "")
+                .map((message) => ({
                     role: message.user?.id === existingAgent.id ? "assistant" : "user",
                     content: message.text || "",
-                }));
+                })) as Array<{ role: "assistant" | "user"; content: string }>;
 
-            const GPTResponse = await openaiClient.chat.completions.create({
-                messages: [
-                    { role: "system", content: instructions },
-                    ...previousMessages,
-                    { role: "user", content: text },
-                ],
-                model: "gpt-4o",
+            const messages = [
+                { role: "system" as const, content: instructions },
+                ...previousMessages,
+                { role: "user" as const, content: text },
+            ] as any;
+
+            const response = await groq.chat.completions.create({
+                model: groqModel,
+                temperature: 0.7,
+                messages,
             });
 
-            const GPTResponseText = GPTResponse.choices[0].message.content;
+            const responseText = response.choices[0]?.message?.content;
 
-            if (!GPTResponseText) {
+
+            if (typeof responseText !== "string" || !responseText.trim()) {
                 return NextResponse.json(
-                    { error: "No response from GPT" },
+                    { error: "No response from Groq" },
                     { status: 400 }
                 );
             }
@@ -299,7 +300,7 @@ export async function POST(req: NextRequest) {
             });
 
             channel.sendMessage({
-                text: GPTResponseText,
+                text: responseText,
                 user: {
                     id: existingAgent.id,
                     name: existingAgent.name,
@@ -309,6 +310,5 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    console.log("[WEBHOOK] Webhook processed successfully");
     return NextResponse.json({ status: "ok" })
 }
