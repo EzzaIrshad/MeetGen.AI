@@ -1,6 +1,6 @@
 import React from 'react'
 import { AgentGetOne } from '../../types';
-import { useTRPC } from '@/app/trpc/client';
+import { useTRPC } from '@/trpc/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

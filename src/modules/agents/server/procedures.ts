@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "@/app/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
 import { agents } from "@/db/schema";
 import { agentsInsertSchema, agentsUpdateSchema } from "../schemas";

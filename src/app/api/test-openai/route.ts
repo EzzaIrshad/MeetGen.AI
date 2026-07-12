@@ -16,6 +16,8 @@
 //     return Response.json(data);
 // }
 
+// =---------------------gemini key test---------------------------
+
 // import { NextResponse } from "next/server";
 
 // export async function GET() {
@@ -82,42 +84,79 @@
 //     });
 // }
 
-// -------------INNGEST TEST-----------------
-import { createAgent, openai } from "@inngest/agent-kit";
-import dotenv from "dotenv";
+import { NextResponse } from "next/server";
+import Groq from "groq-sdk";
 
-dotenv.config();
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 
-const summarizer = createAgent({
-    name: "summarizer",
-    system: `
-You are an expert meeting summarizer.
+export async function GET() {
+    if (!process.env.GROQ_API_KEY) {
+        return NextResponse.json(
+            { error: "GROQ_API_KEY is not set" },
+            { status: 500 }
+        );
+    }
 
-Summarize the transcript into:
-- Overview
-- Key Notes
-- Action Items
-  `,
-    model: openai({
-        model: "openai/gpt-oss-120b",
-        apiKey: process.env.GROQ_API_KEY!,
-        baseUrl: "https://api.groq.com/openai/v1",
-    }),
-});
+    try {
+        const response = await groq.chat.completions.create({
+            model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+            messages: [
+                {
+                    role: "user",
+                    content: "Reply with one short sentence confirming Groq is working.",
+                },
+            ],
+            temperature: 0.2,
+        });
 
-async function main() {
-    const transcript = `
-John: Welcome everyone.
-Sarah: Today we'll discuss the new dashboard.
-John: We have improved performance by 40%.
-Sarah: Next sprint we'll add authentication.
-`;
-
-    const { output } = await summarizer.run(
-        `Summarize this transcript:\n${transcript}`
-    );
-
-    console.log(output[0]);
+        return NextResponse.json({
+            ok: true,
+            reply: response.choices[0]?.message?.content ?? "",
+        });
+    } catch (error) {
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "Unknown error" },
+            { status: 500 }
+        );
+    }
 }
 
-main();
+// -------------INNGEST TEST-----------------
+// import { createAgent, openai } from "@inngest/agent-kit";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// const summarizer = createAgent({
+//     name: "summarizer",
+//     system: `
+// You are an expert meeting summarizer.
+
+// Summarize the transcript into:
+// - Overview
+// - Key Notes
+// - Action Items
+//   `,
+//     model: openai({
+//         model: "openai/gpt-oss-120b",
+//         apiKey: process.env.GROQ_API_KEY!,
+//         baseUrl: "https://api.groq.com/openai/v1",
+//     }),
+// });
+
+// async function main() {
+//     const transcript = `
+// John: Welcome everyone.
+// Sarah: Today we'll discuss the new dashboard.
+// John: We have improved performance by 40%.
+// Sarah: Next sprint we'll add authentication.
+// `;
+
+//     const { output } = await summarizer.run(
+//         `Summarize this transcript:\n${transcript}`
+//     );
+
+//     console.log(output[0]);
+// }
+
+// main();

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { TRPCReactProvider } from "./trpc/client";
+import { TRPCReactProvider } from "../trpc/client";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { NuqsAdapter } from 'nuqs/adapters/next'

@@ -1,5 +1,5 @@
 "use client";
-import { useTRPC } from "@/app/trpc/client";
+import { useTRPC } from "@/trpc/client";
 import { Call, CallingState, StreamCall, StreamVideo, StreamVideoClient } from "@stream-io/video-react-sdk";
 // @ts-ignore: side-effect import for SDK CSS without type declarations
 import "@stream-io/video-react-sdk/dist/css/styles.css";

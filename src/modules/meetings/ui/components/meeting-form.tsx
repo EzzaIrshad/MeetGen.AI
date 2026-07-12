@@ -1,5 +1,5 @@
 
-import { useTRPC } from '@/app/trpc/client';
+import { useTRPC } from '@/trpc/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

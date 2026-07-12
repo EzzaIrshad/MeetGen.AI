@@ -1,4 +1,4 @@
-import { getQueryClient, trpc } from '@/app/trpc/server'
+import { getQueryClient, trpc } from '@/trpc/server'
 import { ErrorBoundary } from "react-error-boundary";
 import { AgentsView, AgentsViewError, AgentsViewLoading } from '@/modules/agents/ui/views/agents-view'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';

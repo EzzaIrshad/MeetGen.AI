@@ -15,8 +15,8 @@ import {
 import Link from "next/link";
 import { format } from "date-fns";
 import Markdown from "react-markdown";
-// import { Transcript } from "./transcript";
-// import { ChatProvider } from "./chat-provider";
+import { Transcript } from "./transcript";
+import { ChatProvider } from "./chat-provider";
 
 interface Props {
     data: MeetingGetOne;
@@ -62,13 +62,13 @@ export const CompletedState = ({ data }: Props) => {
                     </ScrollArea>
                 </div>
 
-                {/* <TabsContent value="transcript">
+                <TabsContent value="transcript">
                     <Transcript meetingId={data.id} />
                 </TabsContent>
 
-                <TabsContent value="chat">
-                    <ChatProvider meetingId={data.id} meetingName={data.name} />
-                </TabsContent> */}
+                <TabsContent value="chat" forceMount className="data-[state=inactive]:hidden">
+                    <ChatProvider meetingId={data.id} />
+                </TabsContent>
 
                 <TabsContent value="recording">
                     <div className="bg-white rounded-lg border px-4 py-5">

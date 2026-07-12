@@ -1,4 +1,4 @@
-import { getQueryClient, trpc } from "@/app/trpc/server";
+import { getQueryClient, trpc } from "@/trpc/server";
 import { auth } from "@/lib/auth";
 import { CallView } from "@/modules/call/ui/views/call-view";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

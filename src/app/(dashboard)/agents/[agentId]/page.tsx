@@ -1,4 +1,4 @@
-import { getQueryClient, trpc } from "@/app/trpc/server";
+import { getQueryClient, trpc } from "@/trpc/server";
 import { AgentIdView, AgentIdViewError, AgentIdViewLoading } from "@/modules/agents/ui/views/agent-id-view";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";

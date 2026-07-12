@@ -1,6 +1,6 @@
 "use client";
 
-import { useTRPC } from "@/app/trpc/client";
+import { useTRPC } from "@/trpc/client";
 import { DataTable } from "@/components/data-table";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
